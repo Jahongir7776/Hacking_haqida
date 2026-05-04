@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiber-Imperiya: Oq Xakerlar Davri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg: #020407;
+            --bg2: #040d14;
+            --bg3: #071220;
+            --surface: rgba(0, 255, 65, 0.04);
+            --surface2: rgba(0, 200, 255, 0.05);
+            --border: rgba(0, 255, 65, 0.15);
+            --border2: rgba(0, 200, 255, 0.2);
+            --text: #e8f5e9;
+            --text-dim: rgba(200, 230, 210, 0.55);
+            --text-dimmer: rgba(150, 180, 160, 0.35);
+            --accent: #00ff41;
+            --accent2: #00c8ff;
+            --accent3: #ff4060;
+            --glow: rgba(0, 255, 65, 0.3);
+            --glow2: rgba(0, 200, 255, 0.25);
+            --nav-bg: rgba(2, 4, 7, 0.85);
+            --scanline: rgba(0,255,65,0.03);
+        }
+        :root[data-theme="light"] {
+            --bg: #f0f4f8;
+            --bg2: #e8edf5;
+            --bg3: #dde4f0;
+            --surface: rgba(37, 99, 235, 0.06);
+            --surface2: rgba(168, 85, 247, 0.05);
+            --border: rgba(37, 99, 235, 0.2);
+            --border2: rgba(168, 85, 247, 0.2);
+            --text: #0d1117;
+            --text-dim: rgba(20, 30, 60, 0.65);
+            --text-dimmer: rgba(20, 30, 60, 0.4);
+            --accent: #1d4ed8;
+            --accent2: #7c3aed;
+            --accent3: #dc2626;
+            --glow: rgba(37, 99, 235, 0.25);
+            --glow2: rgba(168, 85, 247, 0.2);
+            --nav-bg: rgba(240, 244, 248, 0.9);
+            --scanline: transparent;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+            transition: background 0.6s ease, color 0.6s ease;
+            min-height: 100vh;
+        }
+
+        /* SCANLINE EFFECT */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                var(--scanline) 0px,
+                var(--scanline) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .mono { font-family: 'Share Tech Mono', monospace; }
+        .display { font-family: 'Orbitron', monospace; }
+
+        /* ─── ANIMATED BG GRID ─── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+            opacity: 0.4;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* ─── FLOATING PARTICLES ─── */
+        .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-20px) translateX(var(--drift)); opacity: 0; }
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.6s, border-color 0.6s;
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px var(--glow);
+            position: relative;
+        }
+        .nav-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            background: var(--surface);
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+            box-shadow: 0 0 6px var(--accent);
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+        .theme-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .theme-btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--glow);
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 2rem 80px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+        .orb1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,255,65,0.12), transparent 70%);
+            top: -150px; left: -150px;
+        }
+        .orb2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,200,255,0.1), transparent 70%);
+            bottom: -100px; right: -100px;
+            animation-delay: -5s;
+        }
+        .orb3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,64,96,0.07), transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -2s;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 30px) scale(0.98); }
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--accent);
+            background: var(--surface);
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            animation: fadeSlideDown 1s ease both;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2.8rem, 8vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            animation: fadeSlideDown 1s ease 0.15s both;
+        }
+        .hero-title .line1 { display: block; color: var(--text); }
+        .hero-title .line2 {
+            display: block;
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 0 100px var(--glow);
+            position: relative;
+        }
+        .hero-title .line3 { display: block; color: var(--text-dim); font-size: 60%; letter-spacing: 8px; margin-top: 0.5rem; }
+
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            color: var(--accent);
+            text-shadow: none;
+        }
+        .glitch::before {
+            left: 3px;
+            text-shadow: -2px 0 var(--accent2);
+            clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+            animation: glitch1 3s infinite linear;
+        }
+        .glitch::after {
+            left: -3px;
+            text-shadow: 2px 0 var(--accent3);
+            clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+            animation: glitch2 3s infinite linear;
+        }
+        @keyframes glitch1 {
+            0%, 90%, 100% { transform: none; opacity: 1; }
+            92% { transform: translateX(-4px); opacity: 0.8; }
+            94% { transform: translateX(4px); opacity: 0.8; }
+            96% { transform: none; opacity: 1; }
+        }
+        @keyframes glitch2 {
+            0%, 88%, 100% { transform: none; opacity: 1; }
+            90% { transform: translateX(4px); opacity: 0.8; }
+            93% { transform: translateX(-4px); opacity: 0.8; }
+            95% { transform: none; opacity: 1; }
+        }
+
+        .hero-sub {
+            max-width: 680px;
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            animation: fadeSlideDown 1s ease 0.3s both;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeSlideDown 1s ease 0.45s both;
+        }
+
+        .btn-primary {
+            padding: 14px 32px;
+            background: var(--accent);
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .btn-primary:hover::before { left: 100%; }
+        .btn-primary:hover { box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow); transform: translateY(-2px); }
+
+        .btn-secondary {
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--text);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border: 1px solid var(--border2);
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent2);
+            color: var(--accent2);
+            box-shadow: 0 0 20px var(--glow2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── STATS BAR ─── */
+        .stats-bar {
+            position: relative;
+            z-index: 1;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            transition: background 0.6s;
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--glow);
+            display: block;
+        }
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dimmer);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ─── SECTION BASE ─── */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-tag::before {
+            content: '';
+            width: 30px; height: 1px;
+            background: var(--accent);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        /* ─── STORY CARD ─── */
+        .story-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+        }
+        .story-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px rgba(0,255,65,0.1), inset 0 0 40px rgba(0,255,65,0.03);
+            transform: translateY(-4px);
+        }
+
+        .story-paragraph {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            line-height: 2;
+            margin-bottom: 1.2rem;
+        }
+        .story-paragraph strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+        .story-paragraph .highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .story-paragraph .danger {
+            color: var(--accent3);
+            font-weight: 700;
+        }
+        .story-paragraph .info {
+            color: var(--accent2);
+            font-weight: 700;
+        }
+
+        .choice-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 640px) { .choice-box { grid-template-columns: 1fr; } }
+
+        .choice-dark {
+            background: rgba(255, 64, 96, 0.08);
+            border: 1px solid rgba(255, 64, 96, 0.25);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .choice-light-card {
+            background: rgba(0, 255, 65, 0.06);
+            border: 1px solid rgba(0, 255, 65, 0.25);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .choice-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .choice-item {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .choice-item::before { flex-shrink: 0; }
+
+        /* ─── WHY SECTION ─── */
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .reason-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: default;
+        }
+        .reason-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--surface), transparent);
+            opacity: 0;
+            transition: 0.4s;
+        }
+        .reason-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0, 255, 65, 0.1);
+        }
+        .reason-card:hover::after { opacity: 1; }
+
+        .reason-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 1rem;
+            transition: 0.4s;
+        }
+        .reason-card:hover .reason-num { color: var(--accent); text-shadow: 0 0 20px var(--glow); }
+        .reason-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .reason-text { color: var(--text-dim); font-size: 0.95rem; line-height: 1.8; }
+
+        /* ─── TERMINAL ─── */
+        .terminal-wrap {
+            background: #010a05;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0,255,65,0.12), inset 0 0 40px rgba(0,0,0,0.5);
+        }
+        [data-theme="light"] .terminal-wrap { background: #0d1117; }
+
+        .terminal-header {
+            background: rgba(0,255,65,0.08);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .t-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .t-red { background: #ff5f57; }
+        .t-yellow { background: #ffbd2e; }
+        .t-green { background: #28ca41; }
+        .terminal-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(0,255,65,0.5);
+            margin-left: auto;
+            letter-spacing: 2px;
+        }
+
+        .terminal-body {
+            padding: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 2.2;
+            min-height: 280px;
+        }
+
+        .t-line { display: block; }
+        .t-prompt { color: #00ff41; }
+        .t-cmd { color: #7dd3fc; }
+        .t-output { color: rgba(0,255,65,0.7); padding-left: 1rem; }
+        .t-success { color: #00ff41; font-weight: 700; }
+        .t-warning { color: #fbbf24; }
+        .t-error { color: #f87171; }
+        .t-dim { color: rgba(100, 150, 100, 0.5); }
+        .t-comment { color: rgba(100, 180, 120, 0.4); }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff41;
+            animation: cursorBlink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* ─── CYBER PATH SECTION ─── */
+        .path-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.6s;
+        }
+        .path-inner { max-width: 1200px; margin: 0 auto; }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2px;
+            margin-top: 3rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .path-item {
+            padding: 2rem;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .path-item:last-child { border-right: none; }
+        .path-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: var(--accent);
+            transition: 0.4s;
+        }
+        .path-item:hover { background: var(--surface); }
+        .path-item:hover::before { width: 100%; }
+
+        .path-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .path-num {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        .path-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+        .path-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+
+        /* ─── HACKER MINDSET ─── */
+        .mindset-section { position: relative; z-index: 1; padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+        .mindset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        @media (max-width: 768px) { .mindset-grid { grid-template-columns: 1fr; } }
+
+        .mindset-list { list-style: none; margin-top: 2rem; }
+        .mindset-item {
+            padding: 1.2rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: 0.3s;
+        }
+        .mindset-item:hover { padding-left: 0.5rem; border-color: var(--accent); }
+        .mindset-arrow {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent);
+            font-weight: 900;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+        .mindset-item:hover .mindset-arrow { text-shadow: 0 0 15px var(--glow); }
+        .mindset-content { flex: 1; }
+        .mindset-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 1rem; }
+        .mindset-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+
+        /* ─── ETHICS SECTION ─── */
+        .ethics-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            background: var(--bg3);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.6s;
+        }
+        .ethics-inner { max-width: 1200px; margin: 0 auto; }
+
+        .ethics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+        @media (max-width: 640px) { .ethics-grid { grid-template-columns: 1fr; } }
+
+        .ethics-card {
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+        .ethics-card.black {
+            background: rgba(255, 64, 96, 0.05);
+            border-color: rgba(255, 64, 96, 0.2);
+        }
+        .ethics-card.white {
+            background: rgba(0, 255, 65, 0.05);
+            border-color: rgba(0, 255, 65, 0.2);
+        }
+        .ethics-card:hover { transform: translateY(-4px); }
+        .ethics-card.black:hover { box-shadow: 0 20px 50px rgba(255,64,96,0.15); }
+        .ethics-card.white:hover { box-shadow: 0 20px 50px rgba(0,255,65,0.15); }
+        .ethics-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+        .ethics-title { font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: 1px; }
+        .ethics-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; }
+        .ethics-list { list-style: none; margin-top: 1rem; }
+        .ethics-list li { font-size: 0.88rem; color: var(--text-dim); padding: 0.3rem 0; line-height: 1.7; }
+        .ethics-list li::before { content: '→ '; color: var(--accent); font-family: 'Share Tech Mono', monospace; }
+        .ethics-card.black .ethics-list li::before { color: var(--accent3); }
+
+        /* ─── SKILLS RADAR ─── */
+        .skills-section { position: relative; z-index: 1; padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+        .skill-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: 0.4s;
+        }
+        .skill-card:hover { border-color: var(--accent2); transform: translateY(-3px); box-shadow: 0 10px 30px var(--glow2); }
+        .skill-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 1rem; }
+        .skill-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .skill-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 8px var(--glow);
+        }
+        .skill-level { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent); margin-top: 0.5rem; }
+
+        /* ─── QUOTE ─── */
+        .quote-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            text-align: center;
+            overflow: hidden;
+        }
+        .quote-text {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 900;
+            color: var(--text-dimmer);
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            line-height: 1.5;
+            letter-spacing: 1px;
+        }
+        .quote-text span { color: var(--accent); text-shadow: 0 0 20px var(--glow); }
+        .quote-author { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--text-dimmer); letter-spacing: 3px; }
+
+        /* ─── FOOTER ─── */
+        footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem 2rem;
+            transition: background 0.6s;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        @media (max-width: 768px) { .footer-top { grid-template-columns: 1fr; gap: 2rem; } }
+
+        .footer-brand-name {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            display: block;
+            text-shadow: 0 0 15px var(--glow);
+        }
+        .footer-brand-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; max-width: 300px; }
+
+        .footer-col-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent2);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.6rem; }
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .footer-links a:hover { color: var(--accent); padding-left: 4px; }
+        .footer-links a::before { content: '›'; color: var(--accent); }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copy {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dimmer);
+        }
+
+        .footer-tg {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer-tg:hover {
+            border-color: var(--accent2);
+            box-shadow: 0 0 20px var(--glow2);
+            transform: translateY(-2px);
+        }
+        .footer-tg-icon { font-size: 1.2rem; }
+        .footer-tg-info { }
+        .footer-tg-channel {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            color: var(--accent2);
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: block;
+        }
+        .footer-tg-handle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-dimmer);
+            display: block;
+        }
+
+        .credit-line {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        .credit-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dimmer);
+            letter-spacing: 2px;
+        }
+        .credit-text a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .credit-text a:hover { text-shadow: 0 0 10px var(--glow); }
+
+        /* ─── SCROLL ANIMATIONS ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ─── DIVIDER ─── */
+        .cyber-divider {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 40px;
+        }
+        .cyber-divider::before, .cyber-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+        }
+        .cyber-divider span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--text-dimmer);
+            letter-spacing: 4px;
+            padding: 0 1rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .stats-bar { gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BG EFFECTS -->
+    <div class="bg-grid"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">CYBER_EMPIRE</div>
+        <div class="nav-right">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>ONLINE</span>
+            </div>
+            <button class="theme-btn" id="theme-btn" title="Mavzuni o'zgartirish">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-bg-orb orb1"></div>
+        <div class="hero-bg-orb orb2"></div>
+        <div class="hero-bg-orb orb3"></div>
+
+        <div class="hero-tag">
+            <span class="status-dot"></span>
+            KIBERXAVFSIZLIK OLAMI · 2025
+        </div>
+
+        <h1 class="hero-title">
+            <span class="line1">DUNYONI</span>
+            <span class="line2"><span class="glitch" data-text="KODLAR">KODLAR</span></span>
+            <span class="line3">BOSHQARADI</span>
+        </h1>
+
+        <p class="hero-sub">
+            Hар bir saytning ortida bir xaker bor — ba'zilari uni himoya qiladi, ba'zilari esa sindirishga urinadi. 
+            Siz qaysi tomonda bo'lasiz? <strong>Tanlov sizniki.</strong>
+        </p>
+
+        <div class="hero-ctas">
+            <a href="#story" class="btn-primary">▶ HIKOYANI O'QI</a>
+            <a href="#path" class="btn-secondary">◈ O'Z YO'LINGNI TOP</a>
+        </div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-num" data-target="3500000">0</span>
+            <span class="stat-label">Kiberxurujlar / Kun</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" data-target="85">0</span>
+            <span class="stat-label">% Inson xatosi sababli</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" data-target="50000">0</span>
+            <span class="stat-label">$ O'rtacha Bug Bounty</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" data-target="3500000">0</span>
+            <span class="stat-label">Xavfsizlik Mutaxassislari Kerak</span>
+        </div>
+    </div>
+
+    <!-- STORY SECTION -->
+    <section class="section" id="story">
+        <div class="section-tag">TASAVVUR QILING</div>
+        <h2 class="section-title reveal">Siz <span style="color:var(--accent)">sistem ichida</span> turibsiz...</h2>
+
+        <div class="story-card reveal reveal-delay-1">
+            <p class="story-paragraph">
+                Soat <strong>03:47</strong>. Tun chuqur. Siz kichik xonada o'tiribsiz — atrofingizda faqat 
+                monitorlarning ko'k nuri va qahva kosasi. Noutbukingizning ekranida esa bir narsa ko'rinadi: 
+                <span class="highlight">dunyoning eng yirik bankining asosiy server portali — ochiq.</span>
+            </p>
+            <p class="story-paragraph">
+                Bu tasodifiy emas. Siz oylar davomida qidirdingiz, o'rgandingiz, sinovdan o'tdingiz. 
+                Pentesting asboblaringiz to'liq. Nmap skaneri tugadi. Metasploit tayyor. 
+                Bir tugma bosilsa... <span class="danger">$2.4 milliard dollar</span> sizning qo'lingizda bo'lardi.
+            </p>
+            <p class="story-paragraph">
+                Lekin sizning oldingizda <strong>ikki yo'l</strong> turibdi. Va bu tanlov nafaqat sizning kelajagingizni, 
+                balki butun bir tizimning xavfsizligini belgilaydi.
+            </p>
+
+            <div class="choice-box">
+                <div class="choice-dark">
+                    <div class="choice-title" style="color: var(--accent3)">⛔ QORA YO'L</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> Umrbod qidiruvda yashash</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> Interpol va FBI sizni izlaydi</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> Pul ishlatib bo'lmaydi — kuzatiladi</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> Yaqinlaringizdan ajralasiz</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> O'rtacha 7-15 yil qamoq jazosi</div>
+                    <div class="choice-item"><span style="color:var(--accent3)">✗</span> Barcha o'qigan bilimlaringiz behuda ketadi</div>
+                </div>
+                <div class="choice-light-card">
+                    <div class="choice-title" style="color: var(--accent)">✅ OQ YO'L</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> Bankka bildirish → $50,000-$200,000 mukofot</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> LinkedIn profilingiz portlaydi — HR-lar sizni izlaydi</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> Qonuniy ish joyi: $120,000+ yillik maosh</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> Hall of Fame sahifangizda noming</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> Konferensiyalarda siz kabi donishmandlar bilan uchrashish</div>
+                    <div class="choice-item"><span style="color:var(--accent)">✓</span> Kelajak avlodlarga ibrat bo'lasiz</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cyber-divider"><span>// SISTEM_TAHLIL //</span></div>
+
+    <!-- WHY HACKING -->
+    <section class="section" id="why">
+        <div class="section-tag">PSIXOLOGIYA</div>
+        <h2 class="section-title reveal">Nega odamlar <br><span style="color:var(--accent)">xakerlikka</span> qiziqadi?</h2>
+        <p class="reveal reveal-delay-1" style="color: var(--text-dim); max-width: 600px; line-height: 1.8; margin-bottom: 1rem;">
+            Bu shunchaki texnologiya emas. Bu inson tabiatidagi eng chuqur instinktlardan biri: 
+            bilish, kashf etish, va tizimlarni tushunish istagi.
+        </p>
+
+        <div class="reasons-grid">
+            <div class="reason-card reveal reveal-delay-1">
+                <div class="reason-num">01</div>
+                <div class="reason-title">Cheksiz Hokimiyat Hissi</div>
+                <div class="reason-text">Tizimlarni ichkaridan tushunish — bu zamonaviy sehrgarlikdir. Bir firewall ortida nima borligini bilish, ma'lumotlar qanday harakatlanishini ko'rish, va bularni boshqara olish — bu his hech narsaga o'xshamaydi. Xakerlar ko'pincha aytadi: "Birinchi marta shell olganimda, dunyoni boshqaryapman deb o'ylaydiganlar tushunadi."</div>
+            </div>
+            <div class="reason-card reveal reveal-delay-2">
+                <div class="reason-num">02</div>
+                <div class="reason-title">Intellektual Kurash</div>
+                <div class="reason-text">CTF (Capture The Flag) musobaqalari, bug bounty platformalari, va pentesting laboratoriyalari — bular shunchaki o'yin emas. Bu dunyodagi eng qiyin intellektual kurashlardir. Har bir muammo yangi konseptlarni o'rganishni talab qiladi: kriptografiya, tarmoq protokollari, assembly, operatsion tizim arxitekturasi.</div>
+            </div>
+            <div class="reason-card reveal reveal-delay-3">
+                <div class="reason-num">03</div>
+                <div class="reason-title">Chegara Yo'q Karera</div>
+                <div class="reason-text">Kiberxavfsizlik mutaxassislari dunyoning istalgan nuqtasida ishlashi mumkin. Remote work, freelance bug bounty, yoki Fortune 500 kompaniyalarida. LinkedIn ma'lumotlariga ko'ra, kiberxavfsizlik sohasidagi bo'sh ish o'rinlar 2025-yilda rekord darajaga yetdi — talab taklifdan 3.5 marta ortiq.</div>
+            </div>
+            <div class="reason-card reveal reveal-delay-4">
+                <div class="reason-num">04</div>
+                <div class="reason-title">Jamiyat Himoyachisi</div>
+                <div class="reason-text">Har safar siz zaiflikni topib, uni to'g'ri ma'muriyatlarga ma'lum qilganingizda, minglab, ba'zan millionlab odamlarning ma'lumotlarini himoya qilasiz. Bu g'amxo'rlik his — "mening bilimim odamlarni himoya qilmoqda" — ko'pchilik xakerlarda kuchli motivatsiya yaratadi.</div>
+            </div>
+            <div class="reason-card reveal reveal-delay-1">
+                <div class="reason-num">05</div>
+                <div class="reason-title">Doimiy O'sish</div>
+                <div class="reason-text">Kiberxavfsizlik sohasida to'xtab bo'lmaydi. Har kuni yangi zaifliklar, yangi texnologiyalar, yangi hujum vektorlari paydo bo'ladi. Bu sohani tanlagan odam hayot davomida o'rganishga mahkum — va bu ularga yoqadi. Zerikish bu sohada mavjud emas.</div>
+            </div>
+            <div class="reason-card reveal reveal-delay-2">
+                <div class="reason-num">06</div>
+                <div class="reason-title">Jamoa Ruhi</div>
+                <div class="reason-text">Hacker Community — dunyodagi eng ochiq va bilim ulashishga tayyor jamoalardan biri. DEF CON, Black Hat, OWASP, va minglab onlayn forumlar. Bu yerda tajribali xakerlar yangi boshlayotganlarni mentorlik qiladi, bilimlari bepul ulashiladi, va hammaning maqsadi bir: xavfsizroq internet.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TERMINAL -->
+    <div class="cyber-divider" style="padding: 0 2rem; max-width: 900px; margin: 0 auto;"><span>// LIVE_DEMO //</span></div>
+
+    <section class="section" style="max-width: 900px;">
+        <div class="section-tag">TERMINAL</div>
+        <h2 class="section-title reveal">Pentester <span style="color:var(--accent)">ko'zi bilan</span> ko'ring</h2>
+        <p class="reveal reveal-delay-1" style="color: var(--text-dim); margin-bottom: 2rem; line-height: 1.8;">
+            Quyida real penetration testing jarayoni qanday ko'rinishini namoyish etamiz. 
+            Har bir buyruq — tartibli, qonuniy, va metodologik.
+        </p>
+
+        <div class="terminal-wrap reveal reveal-delay-2">
+            <div class="terminal-header">
+                <span class="t-dot t-red"></span>
+                <span class="t-dot t-yellow"></span>
+                <span class="t-dot t-green"></span>
+                <span class="terminal-title">PENTEST_LAB · KALI LINUX 2024.4</span>
+            </div>
+            <div class="terminal-body" id="terminal">
+                <span class="t-line t-comment"># Authorized Penetration Test — Target: demo.vulnerable.lab</span>
+                <span class="t-line t-comment"># Scope: Web Application, API Endpoints</span>
+                <span class="t-line t-dim">────────────────────────────────────────────</span>
+                <span class="t-line"><span class="t-prompt">┌──(xaker㉿kali)-[~/pentest]</span></span>
+                <span class="t-line"><span class="t-prompt">└─$ </span><span class="t-cmd">nmap -sV -sC -p 80,443,8080 demo.vulnerable.lab</span></span>
+                <span class="t-line t-output">Starting Nmap 7.95 ( https://nmap.org )</span>
+                <span class="t-line t-output">PORT     STATE  SERVICE  VERSION</span>
+                <span class="t-line t-output">80/tcp   open   http     Apache 2.4.51</span>
+                <span class="t-line t-output">443/tcp  open   https    nginx 1.21.0</span>
+                <span class="t-line t-warning">8080/tcp open   http     Tomcat 9.0.43 ← ZAIF VERSIYA!</span>
+                <span class="t-line t-dim">────────────────────────────────────────────</span>
+                <span class="t-line"><span class="t-prompt">└─$ </span><span class="t-cmd">gobuster dir -u http://demo.vulnerable.lab -w /wordlist/common.txt</span></span>
+                <span class="t-line t-output">Found: /admin (Status: 200)</span>
+                <span class="t-line t-output">Found: /api/v1 (Status: 200)</span>
+                <span class="t-line t-warning">Found: /backup.zip (Status: 200) ← XAVFLI!</span>
+                <span class="t-line t-dim">────────────────────────────────────────────</span>
+                <span class="t-line"><span class="t-prompt">└─$ </span><span class="t-cmd">sqlmap -u "http://demo.vulnerable.lab/api/v1/user?id=1" --dbs</span></span>
+                <span class="t-line t-output">[INFO] Testing connection to target URL...</span>
+                <span class="t-line t-output">[INFO] GET parameter 'id' is vulnerable!</span>
+                <span class="t-line t-success">[SUCCESS] SQL Injection topildi → CVE-2024-XXXX</span>
+                <span class="t-line t-dim">────────────────────────────────────────────</span>
+                <span class="t-line"><span class="t-prompt">└─$ </span><span class="t-cmd">python3 generate_report.py --format pdf --severity critical</span></span>
+                <span class="t-line t-output">[+] Hisobot yaratilmoqda...</span>
+                <span class="t-line t-output">[+] Zaifliklar soni: 7 (3 Critical, 2 High, 2 Medium)</span>
+                <span class="t-line t-success">[✓] report_2025_01_15.pdf saqlandi</span>
+                <span class="t-line t-success">[✓] Mijozga yuborildi. Ruxsat: $15,000 mukofot</span>
+                <span class="t-line t-dim">────────────────────────────────────────────</span>
+                <span class="t-line"><span class="t-prompt">└─$ </span><span class="cursor"></span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- PATH SECTION -->
+    <div class="path-section" id="path">
+        <div class="path-inner">
+            <div class="section-tag">YO'NALISHLAR</div>
+            <h2 class="section-title reveal">Kiberxavfsizlikda <br><span style="color:var(--accent)">qaysi yo'lni</span> tanlaysiz?</h2>
+            <p class="reveal reveal-delay-1" style="color: var(--text-dim); max-width: 600px; line-height: 1.8; margin-bottom: 1rem;">
+                Xavfsizlik sohasi tor emas — u bir nechta ixtisosliklarga bo'linadi. 
+                Har birida chuqur bilim va unikal mahorat talab qilinadi.
+            </p>
+
+            <div class="path-grid reveal reveal-delay-2">
+                <div class="path-item">
+                    <span class="path-icon">🔴</span>
+                    <div class="path-num">01 · RED TEAM</div>
+                    <div class="path-name">Hujumchi Mutaxassis</div>
+                    <div class="path-desc">Tizimlarni buzib, zaifliklarni topasiz. Ruxsat bilan. Penetration testing, social engineering, exploit development.</div>
+                </div>
+                <div class="path-item">
+                    <span class="path-icon">🔵</span>
+                    <div class="path-num">02 · BLUE TEAM</div>
+                    <div class="path-name">Himoyachi</div>
+                    <div class="path-desc">SOC analitik, Threat Hunting, Incident Response. Hujumlarni kuzatasiz va zararsizlantirасиz.</div>
+                </div>
+                <div class="path-item">
+                    <span class="path-icon">🟣</span>
+                    <div class="path-num">03 · PURPLE TEAM</div>
+                    <div class="path-name">Ikki Tomonlama</div>
+                    <div class="path-desc">Red va Blue team o'rtasida ko'prik. Hujum va himoya strategiyalarini birlashtirасиз.</div>
+                </div>
+                <div class="path-item">
+                    <span class="path-icon">⚡</span>
+                    <div class="path-num">04 · BUG BOUNTY</div>
+                    <div class="path-name">Freelance Xaker</div>
+                    <div class="path-desc">HackerOne, Bugcrowd, Intigriti platformalarida zaiflik topib pul ishlaysiz. Hech kim sizga bosh bo'lmaydi.</div>
+                </div>
+                <div class="path-item">
+                    <span class="path-icon">🔐</span>
+                    <div class="path-num">05 · CRYPTOGRAPHY</div>
+                    <div class="path-name">Kriptograf</div>
+                    <div class="path-desc">Shifrlash algoritmlari, blockchain xavfsizligi, kriptografik protokollarni o'rganasiz va ishlab chiqasiz.</div>
+                </div>
+                <div class="path-item">
+                    <span class="path-icon">🌐</span>
+                    <div class="path-num">06 · OSINT</div>
+                    <div class="path-name">Ochiq Manba Razvedkasi</div>
+                    <div class="path-desc">Internetdagi ochiq ma'lumotlardan foydalanib, tahdidlarni oldindan aniqlaysiz. Digital detektiv ishi.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINDSET -->
+    <section class="mindset-section">
+        <div class="mindset-grid">
+            <div>
+                <div class="section-tag">TAFAKKUR TARZI</div>
+                <h2 class="section-title reveal">Haqiqiy xaker <br><span style="color:var(--accent)">qanday fikrlaydi?</span></h2>
+                <p class="reveal reveal-delay-1" style="color: var(--text-dim); line-height: 1.8;">
+                    Xakerlik — bu shunchaki texnik bilim emas. Bu dunyo va tizimlarga mutlaqo boshqacha 
+                    nuqtai nazardan qarash qobiliyatidir. Siz "nima uchun bu ishlaydi?" emas, 
+                    <strong>"nima uchun bu ishlamay qolishi mumkin?"</strong> deb savol berасиз.
+                </p>
+
+                <ul class="mindset-list reveal reveal-delay-2">
+                    <li class="mindset-item">
+                        <span class="mindset-arrow">//</span>
+                        <div class="mindset-content">
+                            <div class="mindset-title">Qiziquvchanlik — eng asosiy xususiyat</div>
+                            <div class="mindset-desc">Har bir tizim, har bir protokol, har bir funksiya "bu qanday ishlaydi?" savolini uyg'otadi. Bu savol sizni kunlar davomida o'rganishga majbur qiladi.</div>
+                        </div>
+                    </li>
+                    <li class="mindset-item">
+                        <span class="mindset-arrow">//</span>
+                        <div class="mindset-content">
+                            <div class="mindset-title">Muvaffaqiyatsizlik — muvaffaqiyat yo'li</div>
+                            <div class="mindset-desc">Har bir "Connection refused", har bir "Permission denied" — bu xato emas, bu ma'lumot. Xakerlar muvaffaqiyatsizliklardan o'rganadi va davom etadi.</div>
+                        </div>
+                    </li>
+                    <li class="mindset-item">
+                        <span class="mindset-arrow">//</span>
+                        <div class="mindset-content">
+                            <div class="mindset-title">Keng qamrovli bilim</div>
+                            <div class="mindset-desc">Tarmoq, OS, dasturlash, kriptografiya, ijtimoiy muhandislik — bular hammasi birlashadi. Hech qachon faqat bitta sohada qolmaysiz.</div>
+                        </div>
+                    </li>
+                    <li class="mindset-item">
+                        <span class="mindset-arrow">//</span>
+                        <div class="mindset-content">
+                            <div class="mindset-title">Etika — texnik mahoratdan muhim</div>
+                            <div class="mindset-desc">Buyuk xakerlarni oddiylardan ajratadigan narsa: ular bilimlarini qanday ishlatishni biladi. Ruxsatsiz hujum emas, xavfsizroq dunyo — bu maqsad.</div>
+                        </div>
+                    </li>
+                    <li class="mindset-item">
+                        <span class="mindset-arrow">//</span>
+                        <div class="mindset-content">
+                            <div class="mindset-title">Sabr va Qat'iyat</div>
+                            <div class="mindset-desc">CTF musobaqasida 72 soat uxlamasdan ishlash, yoki bir zaiflikni topish uchun haftalab qidirish — bu xakerlik madaniyatining bir qismi.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="reveal reveal-delay-3" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+                    <div class="section-tag" style="margin-bottom: 0.75rem;">O'RGANISH YO'LI</div>
+                    <div style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.8;">
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">📚 Kompyuter Tarmog'i asoslari (TCP/IP, OSI)</div>
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">🐧 Linux: Terminal, Bash scripting, File permissions</div>
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">🐍 Python: Avtomatlashtirish, Exploit yozish</div>
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">🌐 Web: OWASP Top 10, Burp Suite, SQLi, XSS</div>
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">🎯 TryHackMe → HackTheBox → VulnHub</div>
+                        <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">🏆 CTF → Bug Bounty → CEH / OSCP Sertifikat</div>
+                        <div style="padding: 0.5rem 0;">💼 Portfolio → LinkedIn → Ish yoki Freelance</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,255,65,0.04); border: 1px solid rgba(0,255,65,0.2); border-radius: 12px; padding: 1.5rem;">
+                    <div style="font-family: 'Orbitron', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 1rem;">FOYDALI PLATFORMALAR</div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; font-family: 'Share Tech Mono', monospace;">
+                        <span style="color: var(--text-dim);">→ TryHackMe (boshlang'ich)</span>
+                        <span style="color: var(--text-dim);">→ HackTheBox (o'rta/ilg'or)</span>
+                        <span style="color: var(--text-dim);">→ PortSwigger Web Academy</span>
+                        <span style="color: var(--text-dim);">→ HackerOne (bug bounty)</span>
+                        <span style="color: var(--text-dim);">→ Bugcrowd (bug bounty)</span>
+                        <span style="color: var(--text-dim);">→ PicoCTF (CTF)</span>
+                        <span style="color: var(--text-dim);">→ CTFtime.org (CTF kalender)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ETHICS -->
+    <div class="ethics-section">
+        <div class="ethics-inner">
+            <div class="section-tag">ETIKA</div>
+            <h2 class="section-title reveal">Qora va Oq <span style="color:var(--accent)">orasidagi</span> chegara</h2>
+            <p class="reveal reveal-delay-1" style="color: var(--text-dim); max-width: 650px; line-height: 1.8;">
+                Texnik bilim — bu faqat qurol. Uni qanday ishlatishingiz — bu sizning xarakteringizni ko'rsatadi. 
+                Ko'pchilik "nima uchun qonuniy harakat qilish kerak?" deb so'raydi. Javob oddiy.
+            </p>
+
+            <div class="ethics-grid reveal reveal-delay-2">
+                <div class="ethics-card black">
+                    <span class="ethics-icon">☠️</span>
+                    <div class="ethics-title" style="color: var(--accent3)">QORA XAKER (Black Hat)</div>
+                    <div class="ethics-text">Ruxsatsiz tizimlarga kirish. Bilimni vayronagarchilik uchun ishlatish.</div>
+                    <ul class="ethics-list">
+                        <li>2024 yilda 85% kiberhuquqbuzarlar ushlandi</li>
+                        <li>AQShda hujum uchun 20 yilgacha qamoq</li>
+                        <li>Mulk musodara qilinadi, hayot buziladi</li>
+                        <li>Yashirin hayot — oila, do'stlardan ajralish</li>
+                        <li>Kripto ham kuzatiladi — Blockchain forensics</li>
+                        <li>Tor ham yetarli himoya bermaydi</li>
+                    </ul>
+                </div>
+                <div class="ethics-card white">
+                    <span class="ethics-icon">🛡️</span>
+                    <div class="ethics-title" style="color: var(--accent)">OQ XAKER (White Hat)</div>
+                    <div class="ethics-text">Ruxsat asosida ishlash. Tizimlarni himoya qilish, zaifliklarni mas'uliyatli oshkor etish.</div>
+                    <ul class="ethics-list">
+                        <li>Bug Bounty: Google yiliga $12M+ to'laydi</li>
+                        <li>FAANG kompaniyalarida $200K+ maosh</li>
+                        <li>Dunyoni yaxshilayotganingizni bilasiz</li>
+                        <li>Konferensiya va jamoalar sizni qadrлайди</li>
+                        <li>Sertifikatlar: OSCP, CEH, CISSP</li>
+                        <li>Kelajak farzandlaringizga g'ururli bo'lasiz</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKILLS -->
+    <section class="skills-section">
+        <div class="section-tag">MAHORAT DARAJASI</div>
+        <h2 class="section-title reveal">Professional xaker <span style="color:var(--accent)">nimalarni biladi?</span></h2>
+
+        <div class="skills-grid reveal reveal-delay-1">
+            <div class="skill-card">
+                <div class="skill-name">Tarmoq Protokollari</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+                <div class="skill-level">92% · ILGOR</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Web Application Testing</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+                <div class="skill-level">88% · ILGOR</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Python / Bash Scripting</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                <div class="skill-level">85% · ILGOR</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Linux / Unix Tizimlar</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+                <div class="skill-level">95% · EKSPERT</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Kriptografiya</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+                <div class="skill-level">70% · O'RTA</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Reverse Engineering</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+                <div class="skill-level">65% · O'RTA</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Social Engineering</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                <div class="skill-level">80% · ILGOR</div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-name">Forensics & OSINT</div>
+                <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                <div class="skill-level">75% · ILGOR</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE -->
+    <div class="quote-section">
+        <p class="quote-text reveal">
+            "Bilim — bu <span>kuch</span>. Lekin kuchni qanday ishlatishingiz — bu sizning 
+            <span>insonligingiz</span>. Dunyodagi eng yaxshi xakerlar — 
+            <span>dunyodagi eng yaxshi himoyachilar</span>."
+        </p>
+        <div class="quote-author reveal reveal-delay-1">— KIBERXAVFSIZLIK FALSAFASI</div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div>
+                    <span class="footer-brand-name">CYBER_EMPIRE</span>
+                    <p class="footer-brand-desc">
+                        Kiberxavfsizlik haqida bilim ulashish, oq xakerlik madaniyatini rivojlantirish, 
+                        va O'zbekistonda kuchli infosec jamoasini shakllantirish — bizning maqsadimiz.
+                    </p>
+                    <div style="margin-top: 1.5rem;">
+                        <a href="https://t.me/codingorchestra" class="footer-tg" target="_blank">
+                            <span class="footer-tg-icon">✈️</span>
+                            <div class="footer-tg-info">
+                                <span class="footer-tg-channel">CODING ORCHESTRA</span>
+                                <span class="footer-tg-handle">@codingorchestra</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="footer-col-title">SAHIFALAR</div>
+                    <ul class="footer-links">
+                        <li><a href="#story">Hikoya</a></li>
+                        <li><a href="#why">Nima uchun?</a></li>
+                        <li><a href="#path">Yo'nalishlar</a></li>
+                        <li><a href="#">Darsliklar</a></li>
+                        <li><a href="#">CTF Musobaqalar</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-col-title">RESURSLAR</div>
+                    <ul class="footer-links">
+                        <li><a href="#">TryHackMe</a></li>
+                        <li><a href="#">HackTheBox</a></li>
+                        <li><a href="#">PortSwigger</a></li>
+                        <li><a href="#">HackerOne</a></li>
+                        <li><a href="#">OWASP</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copy">
+                    <span class="mono" style="color: var(--accent);">© 2025</span> CYBER_EMPIRE · Barcha huquqlar himoyalangan
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="https://t.me/codingorchestra" target="_blank" style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--text-dimmer); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dimmer)'">
+                        📢 t.me/codingorchestra
+                    </a>
+                    <a href="https://t.me/codingorchestradirector" target="_blank" style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--text-dimmer); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--text-dimmer)'">
+                        👤 t.me/codingorchestradirector
+                    </a>
+                </div>
+            </div>
+
+            <div class="credit-line">
+                <p class="credit-text">
+                    DEVELOPED BY <a href="https://t.me/codingorchestra">codingorchestra</a> · 
+                    MUROJAAT: <a href="https://t.me/codingorchestradirector" style="color: var(--accent2);">codingorchestradirector</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ─── THEME TOGGLE ───
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const root = document.documentElement;
+
+        themeBtn.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+        });
+
+        // ─── PARTICLES ───
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const x = Math.random() * 100;
+            const duration = 8 + Math.random() * 15;
+            const delay = Math.random() * 20;
+            const drift = (Math.random() - 0.5) * 200;
+            p.style.cssText = `
+                left: ${x}%;
+                animation-duration: ${duration}s;
+                animation-delay: -${delay}s;
+                --drift: ${drift}px;
+                width: ${1 + Math.random() * 2}px;
+                height: ${1 + Math.random() * 2}px;
+                opacity: ${0.3 + Math.random() * 0.7};
+            `;
+            container.appendChild(p);
+        }
+
+        // ─── SCROLL REVEAL ───
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    // Animate skill bars
+                    const fills = e.target.querySelectorAll('.skill-fill');
+                    fills.forEach(fill => {
+                        setTimeout(() => {
+                            fill.style.width = fill.dataset.width + '%';
+                        }, 200);
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Also observe skills section for bars
+        const skillsSection = document.querySelector('.skills-section');
+        if (skillsSection) observer.observe(skillsSection);
+
+        // ─── COUNTER ANIMATION ───
+        function animateCount(el, target, duration = 2000) {
+            const start = performance.now();
+            const isLarge = target > 10000;
+            const update = (time) => {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(eased * target);
+                
+                if (target >= 1000000) {
+                    el.textContent = (current / 1000000).toFixed(1) + 'M+';
+                } else if (target >= 1000) {
+                    el.textContent = current.toLocaleString();
+                } else {
+                    el.textContent = current;
+                }
+                
+                if (progress < 1) requestAnimationFrame(update);
+            };
+            requestAnimationFrame(update);
+        }
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.querySelectorAll('[data-target]').forEach(el => {
+                        animateCount(el, parseInt(el.dataset.target));
+                    });
+                    statsObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsBar = document.querySelector('.stats-bar');
+        if (statsBar) statsObserver.observe(statsBar);
+    </script>
+</body>
+</html>
