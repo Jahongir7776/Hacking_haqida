@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiber-Imperiya: Oq Xakerlar Davri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css">
+    <style>
+        :root { --accent: #00ff41; }
+        body {
+            font-family: 'Geist Sans', sans-serif;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mono { font-family: 'Geist Mono', monospace; }
+        
+        body.dark { background-color: #050505; color: #fafafa; }
+        .dark .card { background: rgba(20, 20, 20, 0.6); border: 1px solid #333; }
+        .dark .glow-text { text-shadow: 0 0 20px rgba(0, 255, 65, 0.4); }
+        .dark .accent-color { color: #00ff41; }
+        
+        body.light { background-color: #f4f4f7; color: #111; }
+        .light .card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .light .accent-color { color: #2563eb; }
+        
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="dark min-h-screen overflow-x-hidden">
+
+    <nav class="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <div class="text-xl font-black tracking-widest mono accent-color">SYSTEM_OVERRIDE_V2</div>
+        <button id="theme-toggle" class="px-4 py-2 rounded-full border border-white/20 hover:scale-110 transition active:scale-95">
+            <span id="theme-icon">🌙</span>
+        </button>
+    </nav>
+
+    <header class="pt-32 pb-20 px-6 max-w-6xl mx-auto text-center">
+        <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold mb-6 tracking-widest uppercase text-white">
+            Xavfsizlik — bu illyuziya
+        </div>
+        <h1 class="text-6xl md:text-8xl font-black mb-8 leading-none tracking-tighter">
+            DUNYONI <br> <span class="accent-color glow-text">KODLAR</span> BOSHQARADI.
+        </h1>
+        <p class="text-zinc-500 text-xl md:text-2xl max-w-3xl mx-auto font-light leading-relaxed">
+            Siz shunchaki foydalanuvchimisiz yoki tizimni ichkaridan boshqaradigan "Oq Xaker"? Tanlov sizniki.
+        </p>
+    </header>
+
+    <section class="px-6 py-20 max-w-5xl mx-auto">
+        <div class="card p-8 md:p-12 rounded-3xl relative overflow-hidden">
+            <h2 class="text-3xl font-bold mb-6 italic">Tasavvur qiling...</h2>
+            <p class="text-zinc-400 text-lg leading-relaxed mb-6">
+                Siz kofe ichib o'tiribsiz, noutbukingizda esa dunyoning eng yirik bankining asosiy serveri "ochiq" turibdi. 
+                Sizda ikki yo'l bor: <br><br>
+                1. <b>Qora yo'l:</b> Pulni o'g'irlash va bir umr qidiruvda, qo'rquvda yashash.<br>
+                2. <b>Oq yo'l:</b> Bu xatoni bankka bildirish, <b>$50,000</b> mukofot olish va kiberxavfsizlik olamining yulduziga aylanish.
+            </p>
+        </div>
+    </section>
+
+    <section class="px-6 py-20 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div>
+            <h2 class="text-4xl font-black mb-6 uppercase leading-tight">Nega odamlar <br> xakerlikka qiziqadi?</h2>
+            <div class="space-y-6 text-zinc-400">
+                <p><span class="text-white font-bold">1. Cheksiz Hokimiyat:</span> Tizimlarning qanday ishlashini bilish — bu sehrgarlikning zamonaviy ko'rinishidir.</p>
+                <p><span class="text-white font-bold">2. Intellektual Jangi:</span> Bu dunyodagi eng qiyin jumboq. Himoya devorini buzib o'tish — eng yuqori darajadagi adrenalin.</p>
+            </div>
+        </div>
+        <div class="bg-zinc-900 rounded-2xl p-6 border border-emerald-500/30 shadow-[0_0_50px_rgba(0,255,65,0.1)]">
+            <code class="mono text-sm leading-relaxed text-emerald-400">
+                <span class="text-zinc-600">// Kelajagingizni skanerlash...</span><br>
+                nmap -sV target.future<br><br>
+                <span class="text-white font-bold">> Access Granted!</span>
+            </code>
+        </div>
+    </section>
+
+    <script>
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        btn.addEventListener('click', () => {
+            if (body.classList.contains('dark')) {
+                body.classList.replace('dark', 'light');
+                icon.textContent = '☀️';
+            } else {
+                body.classList.replace('light', 'dark');
+                icon.textContent = '🌙';
+            }
+        });
+    </script>
+</body>
+</html>
